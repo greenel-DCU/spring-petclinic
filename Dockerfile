@@ -1,4 +1,5 @@
-FROM anapsix/alpine-java
+FROM openjdk:8-jdk-alpine
 LABEL maintainer="lisapetclinic.azurewebsites.net"
-COPY /target/spring-petclinic-1.5.1.jar /home/spring-petclinic-1.5.1.jar
-CMD ["java","-jar","/home/spring-petclinic-1.5.1.jar"]
+ARG JAR_FILE=target/*.jar
+COPY ${JAR_FILE} app.jar
+ENTRYPOINT ["java","-jar","/app.jar"]
