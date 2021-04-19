@@ -9,7 +9,7 @@ pipeline {
                 sh './mvnw clean package'
             }
         }
-    }
+  
     stage('Docker Build') {
       agent any
       steps {
@@ -17,3 +17,4 @@ pipeline {
       }
     }
   }
+}
