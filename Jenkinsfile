@@ -17,24 +17,24 @@ pipeline {
         }
         
      
-      stage('Docker Build') {
-        steps {
-            sh 'docker build . -t lisaitt/spring-petclinic:latest'
-            //sh 'docker build . --tag petclinic'//works
+        stage('Docker Build') {
+            steps {
+              sh 'docker build . -t lisaitt/spring-petclinic:latest'
+              //sh 'docker build . --tag petclinic'//works
+            }
         }
-    }
     
-    stage('Docker Push') {
-      agent any
-      steps {
-            withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'dockerHubPassword', usernameVariable: 'dockerHubUser')]) {
+        stage('Docker Push') {
+
+          steps {
+              withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'dockerHubPassword', usernameVariable: 'dockerHubUser')]) {
                 sh "docker login -u ${env.dockerHubUser} -p ${env.dockerHubPassword}"
                 sh 'docker push lisaitt/spring-petclinic:latest'
             }    
         }
-    }
+      }
         
-}
+  }
         
        
 
