@@ -5,13 +5,7 @@ pipeline {
     triggers {pollSCM('* * * * *')}
     
     stages{    
-        stage('Checkout') { 
-            steps{
-                echo 'Checking out project...'
-                git branch: 'main', url: 'https://github.com/greenel-DCU/spring-petclinic.git'
-            }
-        }
-
+        
         stage('Build') {
             steps{
                 echo 'Building project...'
@@ -34,6 +28,7 @@ pipeline {
             }
         }
         
+
      
         stage('Docker Build') {
             steps {
