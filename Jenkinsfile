@@ -1,6 +1,9 @@
 pipeline {
+   
     agent any
+    
     triggers {pollSCM('* * * * *')}
+    
     stages{    
         stage('Checkout') { 
             steps{
@@ -16,24 +19,41 @@ pipeline {
             }
         }
         
+        stage('Test Results and Archive') {
+            steps {
+                junit '**/target/surefire-reports/TEST-*.xml'
+                archiveArtifacts 'target/*.jar'
+            }    
+        }
+        
+        stage('SonarQube analysis') {
+            steps {
+                withSonarQubeEnv('Sonar8.2') {//name of my sonarcube server set under configuration
+                     sh 'mvn clean package sonar:sonar'
+                }
+            }
+        }
+        
      
         stage('Docker Build') {
             steps {
-              sh 'docker build . -t lisaitt/spring-petclinic:latest'
-              //sh 'docker build . --tag petclinic'//works
+                sh 'docker build . -t lisaitt/spring-petclinic:latest'
             }
-        }
+    }
     
-        stage('Docker Push') {
-
-          steps {
-              withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'dockerHubPassword', usernameVariable: 'dockerHubUser')]) {
+    stage('Docker Push') {
+      agent any
+      steps {
+            withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'dockerHubPassword', usernameVariable: 'dockerHubUser')]) {
                 sh "docker login -u ${env.dockerHubUser} -p ${env.dockerHubPassword}"
                 sh 'docker push lisaitt/spring-petclinic:latest'
             }    
         }
-      }
-  }     
+    }
+        
+}
+        
+       
 
     post {
             always {
@@ -44,5 +64,4 @@ pipeline {
             
         }
 }
-
 
